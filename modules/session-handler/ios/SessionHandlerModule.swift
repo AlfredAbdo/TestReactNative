@@ -59,11 +59,11 @@ public class SessionHandlerModule: Module {
       UserDefaults.standard.set(token, forKey: tokenKey)
     }
 
-    AsyncFunction("getToken") { () in
+    AsyncFunction("getToken") {
       return UserDefaults.standard.string(forKey: tokenKey) ?? ""
     }
 
-    AsyncFunction("clearToken") { () in
+    AsyncFunction("clearToken") {
       UserDefaults.standard.removeObject(forKey: tokenKey)
     }
   }

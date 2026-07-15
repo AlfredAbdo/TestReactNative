@@ -1,22 +1,23 @@
 package com.anonymous.modules.sessionhandler
 
+//import expo.modules.ui.ExpoUIView
+//import expo.modules.kotlin.records.recordFromMap
+//import expo.modules.ui.ModifierRegistry
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.Promise
-import expo.modules.ui.ExpoUIView
-import expo.modules.kotlin.records.recordFromMap
-import expo.modules.ui.ModifierRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_session")
 
@@ -78,29 +79,25 @@ class SessionHandlerModule : Module() {
             }
         } */
 
-        //TODO below is a mess; try to see how Coroutine marker works, because the documentations are all over the place
-
-        AsyncFunction("setToken") { token: String, promise: Promise ->
-            CoroutineScope(Dispatchers.IO).launch {
+        AsyncFunction("setToken") Coroutine { token: String ->
+            withContext(Dispatchers.IO) {
                 context.dataStore.edit { preferences ->
                     preferences[tokenKey] = token
                 }
-                promise.resolve(Unit)
             }
         }
 
-        AsyncFunction("getToken") { promise: Promise ->
-            CoroutineScope(Dispatchers.IO).launch {
-                promise.resolve(context.dataStore.data.first()[tokenKey].orEmpty())
+        AsyncFunction("getToken") Coroutine { ->
+            withContext(Dispatchers.IO) {
+                context.dataStore.data.first()[tokenKey].orEmpty()
             }
         }
 
-        AsyncFunction("clearToken") { promise: Promise ->
-            CoroutineScope(Dispatchers.IO).launch {
+        AsyncFunction("clearToken") Coroutine { ->
+            withContext(Dispatchers.IO) {
                 context.dataStore.edit { preferences ->
                     preferences.remove(tokenKey)
                 }
-                promise.resolve(Unit)
             }
         }
     }
