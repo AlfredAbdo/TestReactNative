@@ -23,6 +23,15 @@ export default function RootLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="game"
+        options={{
+          title: "Game",
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialIcon name={focused ? "timelapse" : "timelapse"} color={color} size={24} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

@@ -10,7 +10,6 @@ import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ImageSourcePropType, Platform, StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import SessionHandlerModule from "../../../modules/session-handler/src/SessionHandlerModule";
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
 
@@ -31,7 +30,8 @@ export default function Index() {
     }
   }, []);
 
-  useEffect(() => {
+  // testing the SessionHandlerModule
+  /* useEffect(() => {
     (async () => {
       var token = await SessionHandlerModule.getToken();
       if (token != "") {
@@ -43,7 +43,8 @@ export default function Index() {
         await SessionHandlerModule.setToken(token);
       }
     })();
-  }, []);
+  }, []); */
+  //---
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
