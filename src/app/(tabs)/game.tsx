@@ -1,3 +1,4 @@
+import GameItemContent, { GameItem } from "@/components/game/GameItem";
 import NumberFormat from "@/utils/number/NumberFormat";
 import { Column, Host, Row, ScrollView, Spacer, Text } from "@expo/ui";
 import { useEffect, useRef, useState } from "react";
@@ -5,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 export default function GameScreen() {
   const [uiCoins, setUiCoins] = useState(0);
   const coinsRef = useRef(0);
+  const [progressUIList, setProgressUIList] = useState(Array(items.length).fill(0));
   const progressList = useRef(Array(items.length).fill(0));
   const lastUpdate = useRef(performance.now());
   const lastUIUpdate = useRef(performance.now());
@@ -26,6 +28,7 @@ export default function GameScreen() {
 
       // As per Gemini, the UI should be throttled in the Expo UI Host because it cannot calculate every frame, instead of using something like Compose's withFrameNanos.
       if (now - lastUIUpdate.current > 100 /*each 100 ms*/) {
+        setProgressUIList([...progressList.current]);
         setUiCoins(Math.floor(coinsRef.current));
         lastUIUpdate.current = now;
       }
@@ -41,7 +44,8 @@ export default function GameScreen() {
     <Host
       style={{
         flex: 1,
-        alignItems: "baseline",
+        alignSelf: "stretch",
+        width: "100%",
         backgroundColor: "#25292e",
       }}
     >
@@ -54,7 +58,11 @@ export default function GameScreen() {
             paddingHorizontal: 16,
           }}
         >
-          <Column spacing={16}>{items.map((item) => GameItemContent(item))}</Column>
+          <Column spacing={16}>
+            {items.map((item, index) => (
+              <GameItemContent key={item.id} item={item} progress={progressUIList[index]} />
+            ))}
+          </Column>
         </ScrollView>
       </Column>
     </Host>
@@ -90,40 +98,6 @@ function CoinsContent(coins: number) {
     </Row>
   );
 }
-
-function GameItemContent(item: GameItem) {
-  return (
-    <Column key={item.id}>
-      <Text textStyle={{ fontSize: 16, fontWeight: "500", color: "#ffd33d" }}>{item.title}</Text>
-      <Text textStyle={{ fontSize: 12, color: "#fff" }}>{item.description}</Text>
-      <Spacer size={8} />
-      <Row alignment="center">
-        <Text textStyle={{ fontSize: 14, color: "#fff" }}>Gain:</Text>
-        <Spacer size={8} />
-        <Text textStyle={{ fontSize: 14, fontWeight: "500", color: "#fff" }}>
-          {NumberFormat.formatAmount(item.baseGain) + " coins each " + NumberFormat.formatDuration(item.baseFillRateMs)}
-        </Text>
-      </Row>
-    </Column>
-  );
-}
-
-type GameItem = {
-  id: string;
-  title: string;
-  description: string;
-  baseFillRateMs: number;
-  baseGain: number;
-
-  /* val upgradeMultipliers: UpgradeMultipliers,
-    val unlockAmount: Double?,
-    val baseUpgradeCost: Double, */
-
-  // UpgradeMultipliers:
-  /* val costMultiplier: Double,
-        val fillRateMultiplier: Double,
-        val gainMultiplier: Double, */
-};
 
 const items: GameItem[] = [
   {
