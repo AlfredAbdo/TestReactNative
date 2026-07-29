@@ -1,6 +1,5 @@
 import NumberFormat from "@/utils/number/NumberFormat";
 import { Column, Row, Spacer, Text } from "@expo/ui";
-import ExpoHorizontalDivider from "../ExpoHorizontalDivider";
 import ProgressIndicator from "../progress/ProgressIndicator";
 
 export type GameItem = {
@@ -22,7 +21,15 @@ export type GameItem = {
 
 export default function GameItemContent({ item, progress }: { item: GameItem; progress: number }) {
   return (
-    <Column>
+    <Column
+      style={{
+        borderColor: "#ffd33d",
+        borderWidth: 1,
+        borderRadius: 8,
+        backgroundColor: "#25292e",
+        padding: 8,
+      }}
+    >
       <Text textStyle={{ fontSize: 16, fontWeight: "500", color: "#ffd33d" }}>{item.title}</Text>
       <Text textStyle={{ fontSize: 12, color: "#fff" }}>{item.description}</Text>
       <Spacer size={8} />
@@ -36,7 +43,7 @@ export default function GameItemContent({ item, progress }: { item: GameItem; pr
       <Spacer size={2} />
       <ProgressIndicator value={progress} color={"#ffd33d"} />
       <Spacer size={2} />
-      <ExpoHorizontalDivider color={"#fff"} />
+      {/* <ExpoHorizontalDivider color={"#fff"} /> */}
     </Column>
   );
 }
