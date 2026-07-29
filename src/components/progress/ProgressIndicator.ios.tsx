@@ -5,14 +5,19 @@ import { ColorValue } from "react-native";
 type ProgressIndicatorProps = {
   value: number;
   color?: ColorValue | undefined;
+  isQuickVersion?: boolean;
 };
 
-export default function ProgressIndicator({ value, color }: ProgressIndicatorProps) {
+export default function ProgressIndicator({ value, color, isQuickVersion }: ProgressIndicatorProps) {
   const modifiers: ViewModifier[] = [];
   if (color !== undefined) {
     modifiers.push(tint(color));
   }
   modifiers.push(frame({ maxWidth: Infinity }));
 
-  return <ProgressView value={value} modifiers={modifiers} />;
+  if (!isQuickVersion) {
+    return <ProgressView value={value} modifiers={modifiers} />;
+  } else {
+    return <ProgressView modifiers={modifiers} />;
+  }
 }

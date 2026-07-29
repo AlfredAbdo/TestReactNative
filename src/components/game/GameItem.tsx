@@ -41,7 +41,7 @@ export default function GameItemContent({ item, progress }: { item: GameItem; pr
         </Text>
       </Row>
       <Spacer size={2} />
-      <ProgressIndicator value={progress} color={"#ffd33d"} />
+      <ProgressIndicator value={progress} color={"#ffd33d"} isQuickVersion={item.baseFillRateMs <= 200} />
       <Spacer size={2} />
       {/* <ExpoHorizontalDivider color={"#fff"} /> */}
     </Column>

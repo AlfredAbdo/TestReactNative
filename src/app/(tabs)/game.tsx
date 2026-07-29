@@ -124,8 +124,8 @@ const items: GameItem[] = [
   {
     id: "4",
     title: "Item 4",
-    description: "Item 4 description",
-    baseFillRateMs: 2 * 60 * 1_000,
-    baseGain: 2_000.0,
+    description: "Testing very short interval",
+    baseFillRateMs: 100,
+    baseGain: 1.0,
   },
 ];
