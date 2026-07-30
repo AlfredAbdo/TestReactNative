@@ -1,5 +1,5 @@
 import NumberFormat from "@/utils/number/NumberFormat";
-import { Column, Row, Spacer, Text } from "@expo/ui";
+import { Button, Column, Row, Spacer, Text } from "@expo/ui";
 import ProgressIndicator from "../progress/ProgressIndicator";
 import { GameItemState } from "./GameItemState";
 
@@ -9,10 +9,9 @@ export type GameItem = {
   description: string;
   baseFillRateMs: number;
   baseGain: number;
-
-  /* val upgradeMultipliers: UpgradeMultipliers,
-    val unlockAmount: Double?,
-    val baseUpgradeCost: Double, */
+  // val baseUpgradeCost: Double,
+  unlockAmount?: number;
+  // val upgradeMultipliers: UpgradeMultipliers,
 
   // UpgradeMultipliers:
   /* val costMultiplier: Double,
@@ -20,7 +19,15 @@ export type GameItem = {
         val gainMultiplier: Double, */
 };
 
-export default function GameItemContent({ item, state }: { item: GameItem; state: GameItemState }) {
+export default function GameItemContent({
+  item,
+  state,
+  onUnlock,
+}: {
+  item: GameItem;
+  state: GameItemState;
+  onUnlock: () => void;
+}) {
   return (
     <Column
       style={{
@@ -42,9 +49,21 @@ export default function GameItemContent({ item, state }: { item: GameItem; state
         </Text>
       </Row>
       <Spacer size={2} />
-      <ProgressIndicator value={state.progress} color={"#ffd33d"} isQuickVersion={item.baseFillRateMs <= 200} />
-      <Spacer size={2} />
-      {/* <ExpoHorizontalDivider color={"#fff"} /> */}
+      {state.unlocked ? (
+        <ProgressIndicator value={state.progress} color={"#ffd33d"} isQuickVersion={item.baseFillRateMs <= 200} />
+      ) : (
+        <Row>
+          {/* Cannot set colors properly without relying on platform specific code, so left the defaults for now (which looks ugly) */}
+          <Button onPress={onUnlock}>
+            <Text textStyle={{ fontSize: 14, fontWeight: "500", color: "#fff" }}>
+              {"Unlock for " + (item.unlockAmount ? NumberFormat.formatAmount(item.unlockAmount) : "0")}
+            </Text>
+          </Button>
+          <Spacer flexible />
+        </Row>
+      )}
+      {/* <Spacer size={2} />
+        <ExpoHorizontalDivider color={"#fff"} /> */}
     </Column>
   );
 }

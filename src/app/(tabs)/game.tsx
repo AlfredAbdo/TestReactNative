@@ -1,14 +1,14 @@
-import GameItemContent, { GameItem } from "@/components/game/GameItem";
-import { createGameItemState } from "@/components/game/GameItemState";
-import NumberFormat from "@/utils/number/NumberFormat";
-import { Column, Host, Row, ScrollView, Spacer, Text } from "@expo/ui";
+import CoinsContent from "@/components/game/CoinsContent";
+import GameItemContent from "@/components/game/GameItem";
+import { createGameItemState, GameItemState } from "@/components/game/GameItemState";
+import { Column, Host, ScrollView } from "@expo/ui";
 import { useEffect, useRef, useState } from "react";
 
 export default function GameScreen() {
   const [uiCoins, setUiCoins] = useState(0);
   const coinsRef = useRef(0);
-  const [stateUIList, setStateUIList] = useState(items.map(createGameItemState));
-  const stateList = useRef(items.map(createGameItemState));
+  const stateList = useRef(states);
+  const [stateUIList, setStateUIList] = useState(states.map((state) => ({ ...state })));
   const lastUpdate = useRef(performance.now());
   const lastUIUpdate = useRef(performance.now());
 
@@ -17,11 +17,14 @@ export default function GameScreen() {
 
     const loop = (now: number) => {
       const diff = now - lastUpdate.current;
-      items.forEach((item, index) => {
-        var progress = stateList.current[index].progress + diff / item.baseFillRateMs;
+      stateList.current.forEach((state, index) => {
+        if (!state.unlocked) {
+          return;
+        }
+        var progress = stateList.current[index].progress + diff / state.item.baseFillRateMs;
         if (progress >= 1.0) {
           progress = 0;
-          coinsRef.current += item.baseGain;
+          coinsRef.current += state.item.baseGain;
         }
         stateList.current[index].progress = progress;
       });
@@ -41,6 +44,10 @@ export default function GameScreen() {
     return () => cancelAnimationFrame(frameId);
   });
 
+  const onUnlock: (state: GameItemState) => void = (state) => {
+    state.unlocked = true;
+  };
+
   return (
     <Host
       style={{
@@ -51,7 +58,7 @@ export default function GameScreen() {
       }}
     >
       <Column>
-        {CoinsContent(uiCoins)}
+        <CoinsContent coins={uiCoins} />
         <ScrollView
           direction="vertical"
           style={{
@@ -60,8 +67,15 @@ export default function GameScreen() {
           }}
         >
           <Column spacing={16}>
-            {items.map((item, index) => (
-              <GameItemContent key={item.id} item={item} state={stateUIList[index]} />
+            {stateList.current.map((state, index) => (
+              <GameItemContent
+                key={state.item.id}
+                item={state.item}
+                state={stateUIList[index]}
+                onUnlock={() => {
+                  onUnlock(state);
+                }}
+              />
             ))}
           </Column>
         </ScrollView>
@@ -70,63 +84,35 @@ export default function GameScreen() {
   );
 }
 
-function CoinsContent(coins: number) {
-  return (
-    <Row
-      alignment="center"
-      style={{
-        paddingHorizontal: 16,
-      }}
-    >
-      <Text
-        textStyle={{
-          fontSize: 24,
-          color: "#fff",
-        }}
-      >
-        Coins:
-      </Text>
-      <Spacer size={8} />
-      <Text
-        textStyle={{
-          fontSize: 32,
-          fontWeight: "bold",
-          color: "#fff",
-        }}
-      >
-        {NumberFormat.formatAmount(coins)}
-      </Text>
-    </Row>
-  );
-}
-
-const items: GameItem[] = [
-  {
+const states: GameItemState[] = [
+  createGameItemState({
     id: "1",
     title: "Item 1",
     description: "Item 1 description",
     baseFillRateMs: 2 * 1_000,
     baseGain: 10.0,
-  },
-  {
+  }),
+  createGameItemState({
     id: "2",
     title: "Item 2",
-    description: "Item 2 description",
-    baseFillRateMs: 5 * 1_000,
-    baseGain: 90.0,
-  },
-  {
-    id: "3",
-    title: "Item 3",
-    description: "Item 3 description",
-    baseFillRateMs: 30 * 1_000,
-    baseGain: 500.0,
-  },
-  {
-    id: "4",
-    title: "Item 4",
     description: "Testing very short interval",
     baseFillRateMs: 100,
     baseGain: 1.0,
-  },
+  }),
+  createGameItemState({
+    id: "3",
+    title: "Item 3",
+    description: "Item 3 description",
+    baseFillRateMs: 5 * 1_000,
+    baseGain: 90.0,
+    unlockAmount: 100.0,
+  }),
+  createGameItemState({
+    id: "4",
+    title: "Item 4",
+    description: "Item 4 description",
+    baseFillRateMs: 30 * 1_000,
+    baseGain: 500.0,
+    unlockAmount: 500.0,
+  }),
 ];
