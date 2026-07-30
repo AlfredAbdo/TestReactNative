@@ -11,6 +11,7 @@ export default function GameScreen() {
   const [stateUIList, setStateUIList] = useState(states.map((state) => ({ ...state })));
   const lastUpdate = useRef(performance.now());
   const lastUIUpdate = useRef(performance.now());
+  const lastElementToShow = useRef(states.findIndex((state) => !state.unlocked));
 
   useEffect(() => {
     let frameId: number;
@@ -46,6 +47,8 @@ export default function GameScreen() {
 
   const onUnlock: (state: GameItemState) => void = (state) => {
     state.unlocked = true;
+    const lastIndexToShow = stateList.current.findIndex((state) => !state.unlocked);
+    lastElementToShow.current = lastIndexToShow != -1 ? lastIndexToShow : Infinity;
   };
 
   return (
@@ -67,16 +70,18 @@ export default function GameScreen() {
           }}
         >
           <Column spacing={16}>
-            {stateList.current.map((state, index) => (
-              <GameItemContent
-                key={state.item.id}
-                item={state.item}
-                state={stateUIList[index]}
-                onUnlock={() => {
-                  onUnlock(state);
-                }}
-              />
-            ))}
+            {stateList.current.map((state, index) =>
+              index <= lastElementToShow.current ? (
+                <GameItemContent
+                  key={state.item.id}
+                  item={state.item}
+                  state={stateUIList[index]}
+                  onUnlock={() => {
+                    onUnlock(state);
+                  }}
+                />
+              ) : null,
+            )}
           </Column>
         </ScrollView>
       </Column>
