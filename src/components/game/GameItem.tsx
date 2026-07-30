@@ -1,6 +1,7 @@
 import NumberFormat from "@/utils/number/NumberFormat";
 import { Column, Row, Spacer, Text } from "@expo/ui";
 import ProgressIndicator from "../progress/ProgressIndicator";
+import { GameItemState } from "./GameItemState";
 
 export type GameItem = {
   id: string;
@@ -19,7 +20,7 @@ export type GameItem = {
         val gainMultiplier: Double, */
 };
 
-export default function GameItemContent({ item, progress }: { item: GameItem; progress: number }) {
+export default function GameItemContent({ item, state }: { item: GameItem; state: GameItemState }) {
   return (
     <Column
       style={{
@@ -41,7 +42,7 @@ export default function GameItemContent({ item, progress }: { item: GameItem; pr
         </Text>
       </Row>
       <Spacer size={2} />
-      <ProgressIndicator value={progress} color={"#ffd33d"} isQuickVersion={item.baseFillRateMs <= 200} />
+      <ProgressIndicator value={state.progress} color={"#ffd33d"} isQuickVersion={item.baseFillRateMs <= 200} />
       <Spacer size={2} />
       {/* <ExpoHorizontalDivider color={"#fff"} /> */}
     </Column>
