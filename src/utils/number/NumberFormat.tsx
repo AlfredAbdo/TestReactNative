@@ -11,13 +11,13 @@ function formatDuration(millis: number): string {
   const hours = Math.floor(millis / (1_000 * 3_600));
   const minutes = Math.floor((millis % (1_000 * 3_600)) / 1_000 / 60);
   const seconds = Math.floor((millis % (1_000 * 60)) / 1_000);
-  const ms = millis % 1_000;
+  const ms = Math.floor(millis) % 1_000;
 
   const parts = [
     hours > 0 ? hours + "hr" : null,
     minutes > 0 ? minutes + "m" : null,
     seconds > 0 ? seconds + "s" : null,
-    ms > 0 ? ms + "ms" : null,
+    ms > 0 ? String(ms).padStart(3, "0") + "ms" : null,
   ];
   return parts.filter(Boolean).join(" ");
 }

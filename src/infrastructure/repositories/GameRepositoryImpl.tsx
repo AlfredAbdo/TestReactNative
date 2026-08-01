@@ -12,18 +12,17 @@ export default class GameRepositoryImpl implements GameRepository {
 
 const items: GameItem[] = [
   {
-    id: "0",
-    title: "Item 0",
-    description: "Testing very fast interval (to be removed)",
-    baseFillRateMs: 100,
-    baseGain: 0.5,
-  },
-  {
     id: "1",
     title: "Item 1",
     description: "Item 1 description",
     baseFillRateMs: 2 * 1_000,
     baseGain: 10.0,
+    baseUpgradeCost: 20.0,
+    upgradeMultipliers: {
+      costMultiplier: 1.5,
+      fillRateMultiplier: 1.2,
+      gainMultiplier: 1.3,
+    },
   },
   {
     id: "2",
@@ -31,7 +30,13 @@ const items: GameItem[] = [
     description: "Item 2 description",
     baseFillRateMs: 5 * 1_000,
     baseGain: 90.0,
+    baseUpgradeCost: 200.0,
     unlockAmount: 100.0,
+    upgradeMultipliers: {
+      costMultiplier: 1.5,
+      fillRateMultiplier: 1.2,
+      gainMultiplier: 1.3,
+    },
   },
   {
     id: "3",
@@ -39,7 +44,13 @@ const items: GameItem[] = [
     description: "Item 3 description",
     baseFillRateMs: 30 * 1_000,
     baseGain: 500.0,
+    baseUpgradeCost: 700.0,
     unlockAmount: 500.0,
+    upgradeMultipliers: {
+      costMultiplier: 1.5,
+      fillRateMultiplier: 1.2,
+      gainMultiplier: 1.3,
+    },
   },
   {
     id: "4",
@@ -47,7 +58,13 @@ const items: GameItem[] = [
     description: "Item 4 description",
     baseFillRateMs: 2 * 60 * 1_000,
     baseGain: 2_000.0,
+    baseUpgradeCost: 4_000.0,
     unlockAmount: 3_000.0,
+    upgradeMultipliers: {
+      costMultiplier: 1.5,
+      fillRateMultiplier: 1.2,
+      gainMultiplier: 1.3,
+    },
   },
   {
     id: "5",
@@ -55,6 +72,12 @@ const items: GameItem[] = [
     description: "Item 5 description",
     baseFillRateMs: 10 * 60 * 1_000,
     baseGain: 10_000.0,
+    baseUpgradeCost: 40_000.0,
     unlockAmount: 20_000.0,
+    upgradeMultipliers: {
+      costMultiplier: 1.5,
+      fillRateMultiplier: 1.2,
+      gainMultiplier: 1.3,
+    },
   },
 ];

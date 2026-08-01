@@ -4,6 +4,7 @@ import { getGameStateUseCase } from "@/di/container";
 import { Result } from "@/domain/common/Result";
 import { GameItemState } from "@/domain/entities/GameItemState";
 import { useGetGameState } from "@/presentation/hooks/useGetGameState";
+import { UpgradeCalculator } from "@/utils/game/UpgradeCalculator";
 import { Column, Host, ScrollView } from "@expo/ui";
 import { useEffect, useRef, useState } from "react";
 
@@ -49,10 +50,10 @@ export default function GameScreen() {
         if (!state.unlocked) {
           return;
         }
-        var progress = stateList.current[index].progress + diff / state.item.baseFillRateMs;
+        var progress = stateList.current[index].progress + diff / state.fillRateMs;
         if (progress >= 1.0) {
           progress = 0;
-          coinsRef.current += state.item.baseGain;
+          coinsRef.current += state.gain;
         }
         stateList.current[index].progress = progress;
       });
@@ -83,6 +84,31 @@ export default function GameScreen() {
     lastElementToShow.current = lastIndexToShow != -1 ? lastIndexToShow : Infinity;
   };
 
+  const onUpgrade: (state: GameItemState) => void = (state) => {
+    if (!state.unlocked || coinsRef.current < state.upgradeCost) {
+      return;
+    }
+
+    coinsRef.current -= state.upgradeCost;
+    const nextLevel = state.level + 1;
+    state.fillRateMs = UpgradeCalculator.calculateFillRate(
+      state.item.baseFillRateMs,
+      state.item.upgradeMultipliers.fillRateMultiplier,
+      nextLevel,
+    );
+    state.gain = UpgradeCalculator.calculateGain(
+      state.item.baseGain,
+      state.item.upgradeMultipliers.gainMultiplier,
+      nextLevel,
+    );
+    state.upgradeCost = UpgradeCalculator.calculateCost(
+      state.item.baseUpgradeCost,
+      state.item.upgradeMultipliers.costMultiplier,
+      nextLevel,
+    );
+    state.level = nextLevel;
+  };
+
   return (
     <Host
       style={{
@@ -110,6 +136,9 @@ export default function GameScreen() {
                   state={stateUIList[index]}
                   onUnlock={() => {
                     onUnlock(state);
+                  }}
+                  onUpgrade={() => {
+                    onUpgrade(state);
                   }}
                 />
               ) : null,

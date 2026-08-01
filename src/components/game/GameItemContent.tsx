@@ -8,10 +8,12 @@ export default function GameItemContent({
   item,
   state,
   onUnlock,
+  onUpgrade,
 }: {
   item: GameItem;
   state: GameItemState;
   onUnlock: () => void;
+  onUpgrade: () => void;
 }) {
   return (
     <Column
@@ -30,12 +32,23 @@ export default function GameItemContent({
         <Text textStyle={{ fontSize: 14, color: "#fff" }}>Gain:</Text>
         <Spacer size={8} />
         <Text textStyle={{ fontSize: 14, fontWeight: "500", color: "#fff" }}>
-          {NumberFormat.formatAmount(item.baseGain) + " coins each " + NumberFormat.formatDuration(item.baseFillRateMs)}
+          {NumberFormat.formatAmount(state.gain) + " coins each " + NumberFormat.formatDuration(state.fillRateMs)}
         </Text>
       </Row>
       <Spacer size={2} />
       {state.unlocked ? (
-        <ProgressIndicator value={state.progress} color={"#ffd33d"} isQuickVersion={item.baseFillRateMs <= 200} />
+        <>
+          <ProgressIndicator value={state.progress} color={"#ffd33d"} isQuickVersion={state.fillRateMs <= 200} />
+          <Row>
+            {/* Cannot set colors properly without relying on platform specific code, so left the defaults for now (which looks ugly) */}
+            <Button onPress={onUpgrade} variant="outlined">
+              <Text textStyle={{ fontSize: 14, fontWeight: "500", color: "#fff" }}>
+                {"Upgrade for " + (state.upgradeCost ? NumberFormat.formatAmount(state.upgradeCost) : "0")}
+              </Text>
+            </Button>
+            <Spacer flexible />
+          </Row>
+        </>
       ) : (
         <Row>
           {/* Cannot set colors properly without relying on platform specific code, so left the defaults for now (which looks ugly) */}
