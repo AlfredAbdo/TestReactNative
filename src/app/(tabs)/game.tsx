@@ -1,17 +1,44 @@
 import CoinsContent from "@/components/game/CoinsContent";
-import GameItemContent from "@/components/game/GameItem";
-import { createGameItemState, GameItemState } from "@/components/game/GameItemState";
+import GameItemContent from "@/components/game/GameItemContent";
+import { getGameStateUseCase } from "@/di/container";
+import { Result } from "@/domain/common/Result";
+import { GameItemState } from "@/domain/entities/GameItemState";
+import { useGetGameState } from "@/presentation/hooks/useGetGameState";
 import { Column, Host, ScrollView } from "@expo/ui";
 import { useEffect, useRef, useState } from "react";
 
 export default function GameScreen() {
   const [uiCoins, setUiCoins] = useState(0);
   const coinsRef = useRef(0);
-  const stateList = useRef(states);
-  const [stateUIList, setStateUIList] = useState(states.map((state) => ({ ...state })));
+  const stateList = useRef<GameItemState[]>([]);
+  const [stateUIList, setStateUIList] = useState<GameItemState[]>([]);
   const lastUpdate = useRef(performance.now());
   const lastUIUpdate = useRef(performance.now());
-  const lastElementToShow = useRef(states.findIndex((state) => !state.unlocked));
+  const lastElementToShow = useRef(-1);
+
+  const { getGameItems, loading } = useGetGameState(getGameStateUseCase);
+
+  useEffect(() => {
+    // TODO pass AbortSignal through the use case and to the repository
+    const fetch = async () => {
+      // TODO: use loading
+      const result = await getGameItems();
+      Result.fold(result, {
+        onSuccess: (items) => {
+          // TODO: stop loading
+          stateList.current = items;
+          setStateUIList(items.map((state) => ({ ...state })));
+          lastElementToShow.current = items.findIndex((state) => !state.unlocked);
+        },
+        onFailure: (error) => {
+          // TODO: stop loading
+          // TODO: show error
+        },
+      });
+    };
+
+    fetch();
+  }, [getGameItems]);
 
   useEffect(() => {
     let frameId: number;
@@ -46,6 +73,10 @@ export default function GameScreen() {
   });
 
   const onUnlock: (state: GameItemState) => void = (state) => {
+    if (state.unlocked || (state.item.unlockAmount !== undefined && coinsRef.current < state.item.unlockAmount)) {
+      return;
+    }
+
     state.unlocked = true;
     const lastIndexToShow = stateList.current.findIndex((state) => !state.unlocked);
     lastElementToShow.current = lastIndexToShow != -1 ? lastIndexToShow : Infinity;
@@ -88,36 +119,3 @@ export default function GameScreen() {
     </Host>
   );
 }
-
-const states: GameItemState[] = [
-  createGameItemState({
-    id: "1",
-    title: "Item 1",
-    description: "Item 1 description",
-    baseFillRateMs: 2 * 1_000,
-    baseGain: 10.0,
-  }),
-  createGameItemState({
-    id: "2",
-    title: "Item 2",
-    description: "Testing very short interval",
-    baseFillRateMs: 100,
-    baseGain: 1.0,
-  }),
-  createGameItemState({
-    id: "3",
-    title: "Item 3",
-    description: "Item 3 description",
-    baseFillRateMs: 5 * 1_000,
-    baseGain: 90.0,
-    unlockAmount: 100.0,
-  }),
-  createGameItemState({
-    id: "4",
-    title: "Item 4",
-    description: "Item 4 description",
-    baseFillRateMs: 30 * 1_000,
-    baseGain: 500.0,
-    unlockAmount: 500.0,
-  }),
-];

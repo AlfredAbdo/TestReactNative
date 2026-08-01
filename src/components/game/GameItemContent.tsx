@@ -1,23 +1,8 @@
 import NumberFormat from "@/utils/number/NumberFormat";
 import { Button, Column, Row, Spacer, Text } from "@expo/ui";
+import { GameItem } from "../../domain/entities/GameItem";
+import { GameItemState } from "../../domain/entities/GameItemState";
 import ProgressIndicator from "../progress/ProgressIndicator";
-import { GameItemState } from "./GameItemState";
-
-export type GameItem = {
-  id: string;
-  title: string;
-  description: string;
-  baseFillRateMs: number;
-  baseGain: number;
-  // val baseUpgradeCost: Double,
-  unlockAmount?: number;
-  // val upgradeMultipliers: UpgradeMultipliers,
-
-  // UpgradeMultipliers:
-  /* val costMultiplier: Double,
-        val fillRateMultiplier: Double,
-        val gainMultiplier: Double, */
-};
 
 export default function GameItemContent({
   item,
@@ -63,7 +48,7 @@ export default function GameItemContent({
         </Row>
       )}
       {/* <Spacer size={2} />
-        <ExpoHorizontalDivider color={"#fff"} /> */}
+              <ExpoHorizontalDivider color={"#fff"} /> */}
     </Column>
   );
 }
