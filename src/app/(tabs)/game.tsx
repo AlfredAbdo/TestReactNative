@@ -77,6 +77,7 @@ export default function GameScreen() {
       return;
     }
 
+    coinsRef.current -= state.item.unlockAmount ?? 0;
     state.unlocked = true;
     const lastIndexToShow = stateList.current.findIndex((state) => !state.unlocked);
     lastElementToShow.current = lastIndexToShow != -1 ? lastIndexToShow : Infinity;
